@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html ng-app='adventOfCodeDay1'>
+  <head>
+    <meta charset="utf-8">
+    <title>Advent Of Code</title>
+  </head>
+  <body>
+    <div class="container" role="main">
+      <div class="page-header">
+        <h1>2015 Day 1</h1>
+      </div>
+    </div>
+
+    <div ng-controller="day1Controller">
+        <div>
+          <label>Part1 : To what floor do the instructions take Santa?</label>
+          <div>
+            <pre>{{part1Output}}</pre>
+          </div>
+        </div>
+        <div>
+          <label>Part 2 : How many blocks away is the first location you visit twice?</label>
+          <div>
+            <pre>{{part2Output}}</pre>
+          </div>
+        </div>
+    </div>
+
+    <!-- Common -->
+    <script src="../../lib/angular.min.js"></script>
+    <script src="stuff.js"></script>
+  </body>
+</html>
