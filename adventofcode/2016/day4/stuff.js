@@ -1,11 +1,11 @@
-(function () {
-'use strict';
-
-angular.module('adventOfCodeDay', [])
-.controller('dayController', function ($scope) {
-    $scope.adventDay = "4";
-    $scope.part1Question = "What is the sum of the sector IDs of the real rooms?";
-    $scope.part2Question = "";
+// (function () {
+// 'use strict';
+//
+// angular.module('adventOfCodeDay', [])
+// .controller('dayController', function ($scope) {
+//     $scope.adventDay = "4";
+//     $scope.part1Question = "What is the sum of the sector IDs of the real rooms?";
+//     $scope.part2Question = "";
 
     var dataArray = [
     "fubrjhqlf-edvnhw-dftxlvlwlrq-803[wjvzd]",
@@ -956,8 +956,8 @@ angular.module('adventOfCodeDay', [])
     "hwbba-gii-eqpvckpogpv-492[pbgiv]",
     "zsxyfgqj-hqfxxnknji-idj-xytwflj-359[jxfin]"
     ];
-    $scope.part1Output="";
-    $scope.part2Output="";
+    // $scope.part1Output="";
+    // $scope.part2Output="";
 
     function findSectorId(room) {
         var sectorIdStartIndex = room.lastIndexOf("-") + 1;
@@ -979,9 +979,11 @@ angular.module('adventOfCodeDay', [])
 
     function getAllCharacterOccurrencesMap(roomName) {
         var occurrences = [];
+        var checksum = [];
+        var lastcommons = "";
 
-        // console.log("getAllCharacterOccurrencesMap :: roomName", roomName);
-        // console.log("getAllCharacterOccurrencesMap :: roomName.length", roomName.length);
+        console.log("getAllCharacterOccurrencesMap :: roomName", roomName);
+        console.log("getAllCharacterOccurrencesMap :: roomName.length", roomName.length);
 
         for (var i = 0; i < roomName.length; i++) {
             var character = roomName.charAt(i);
@@ -1004,8 +1006,38 @@ angular.module('adventOfCodeDay', [])
             }
         }
         occurrences = occurrences.sort(dynamicSort("occurrences"));
-        // console.log("getAllCharacterOccurrencesMap :: final occurrences", occurrences);
-        return occurrences;
+        console.log("getAllCharacterOccurrencesMap :: final occurrences", occurrences);
+        console.log("getAllCharacterOccurrencesMap :: occurrences.length", occurrences.length);
+        var previousCharOccurence = 0;
+
+        for (var k = 0; k < occurrences.length; k++) {
+          //build the checksum
+          // console.log("getAllCharacterOccurrencesMap :: previousCharOccurence", previousCharOccurence);
+          // console.log("getAllCharacterOccurrencesMap :: occurrences["+k+"].character", occurrences[k].character);
+          // console.log("getAllCharacterOccurrencesMap :: occurrences["+k+"].occurrences", occurrences[k].occurrences);
+          // console.log("getAllCharacterOccurrencesMap :: checksum.length", checksum.length);
+
+          if (checksum.length >= 4) {
+            if (previousCharOccurence > occurrences[k].occurrences) {
+              lastcommons += occurrences[k].character;
+            } else {
+              break;
+            }
+          } else {
+            checksum.push(occurrences[k].character);
+          };
+
+          if (k > 0) {
+            previousCharOccurence = occurrences[k-1].occurrences;
+          } else {
+            previousCharOccurence = occurrences[k].occurrences;
+          }
+          // console.log("************************************");
+
+        }
+        checksum.push(lastcommons);
+        console.log("getAllCharacterOccurrencesMap :: checksum for this room is", checksum);
+        return checksum;
     }
 
     function isValidRoom (room) {
@@ -1016,57 +1048,85 @@ angular.module('adventOfCodeDay', [])
       var roomNameEndIndex = room.lastIndexOf("-");
       var roomName = room.substr(0, roomNameEndIndex);
 
-      // console.log(">>> isValidRoom :: room", room);
+      console.log(">>> isValidRoom :: room", room);
       // console.log("isValidRoom :: checksumStartId", checksumStartId);
       // console.log("isValidRoom :: checksum", checksum);
       // console.log("isValidRoom :: roomNameEndIndex", roomNameEndIndex);
       // console.log("isValidRoom :: roomName", roomName);
 
-      var occurrences = getAllCharacterOccurrencesMap(roomName);
-      // console.log("isValidRoom :: occurrences", occurrences);
+      var roomChecksum = getAllCharacterOccurrencesMap(roomName);
+      console.log("*** isValidRoom :: compare roomChecksum ["+roomChecksum+"] to checksum ["+checksum+"]");
 
-      for (var i=0; i < checksum.length; i++) {
-            var character = checksum.charAt(i);
-            var occurrencesRemaining = occurrences;
-            // console.log("isValidRoom :: character", character);
-            // console.log("isValidRoom :: occurrences.length", occurrences.length);
-            // console.log("isValidRoom :: checksum.length", checksum.length);
+      var compareChecksums = [];
 
-            var characterInOccurences = false;
-            for (var k=0; k < occurrences.length; k++){
-              var item = occurrences[k];
-              // console.log("isValidRoom :: occurrences[k] ", occurrences[k]);
-              if (character == item.character) {
-                console.log("*** isValidRoom :: FOUND the character ["+character+"] in occurences at ["+k+"] for checksum ["+checksum+"] - it appears ["+occurrences[k].occurrences+"] times");
-                characterList.push(occurrences[k]);
-                occurrencesRemaining.splice(k,1);
-                characterInOccurences = true;
-                break;
-              }
-            };
+      for (var i=0; i==4; i++) {
+        var tempChar1 = roomChecksum[i];
+        var tempChar2 = checksum.charAt(i);
+        console.log(">>> compare Checksums :: ["+tempChar1+"] vs ["+tempChar2+"]");
+        if (tempChar1 == tempChar2) {
+          console.log("*** isValidRoom :: chars match ");
+           compareChecksums.push(tempChar2);
+        } else {
+          console.log("*** isValidRoom :: chars don't match, checking in the commonChars");
+          if (tempChar1[i].indexOf(tempChar2) > 0) {
+              console.log("*** isValidRoom :: chars found in commons ");
+               compareChecksums.push(tempChar2);
+             }
+        }
+      };
 
-            if (!characterInOccurences) {
-              break;
-            }
-      }
+      // console.log(">>> compare Checksums :: compareChecksums", compareChecksums);
 
-      if (characterList.length == 5) {
-
-          var smallestChecksumOccurrence = parseInt(characterList[4].occurrences);
-          var largestRemainingRoomOccurrence = parseInt(occurrencesRemaining[0].occurrences);
-
-          console.log("*** isValidRoom :: compare smallestChecksumOccurrence ["+smallestChecksumOccurrence+"] to largestRemainingRoomOccurrence ["+largestRemainingRoomOccurrence+"]");
-          if (smallestChecksumOccurrence >= largestRemainingRoomOccurrence) {
-            console.log("*** isValidRoom :: all characters found in room ["+roomName+"] for checksum ["+checksum+"] and are the biggest in the room");
-            return true;
-          } else {
-            console.log("*** isValidRoom :: all characters found in room ["+roomName+"] but they are not the biggest 5 in the room ");
-            return false;
-          };
+      if (compareChecksums.length == 5 ) {
+        console.log("*** isValidRoom :: checksums match ");
+        return true;
       } else {
-        console.log("*** isValidRoom :: ["+character+"] was not found in the room ["+roomName+"] for checksum ["+checksum+"] ");
+        console.log("*** isValidRoom :: checksums don't match");
         return false;
       };
+
+      // for (var i=0; i < checksum.length; i++) {
+      //       var character = checksum.charAt(i);
+      //       var occurrencesRemaining = occurrences;
+      //       // console.log("isValidRoom :: character", character);
+      //       // console.log("isValidRoom :: occurrences.length", occurrences.length);
+      //       // console.log("isValidRoom :: checksum.length", checksum.length);
+      //
+      //       var characterInOccurences = false;
+      //       for (var k=0; k < occurrences.length; k++){
+      //         var item = occurrences[k];
+      //         // console.log("isValidRoom :: occurrences[k] ", occurrences[k]);
+      //         if (character == item.character) {
+      //           console.log("*** isValidRoom :: FOUND the character ["+character+"] in occurences at ["+k+"] for checksum ["+checksum+"] - it appears ["+occurrences[k].occurrences+"] times");
+      //           characterList.push(occurrences[k]);
+      //           occurrencesRemaining.splice(k,1);
+      //           characterInOccurences = true;
+      //           break;
+      //         }
+      //       };
+      //
+      //       if (!characterInOccurences) {
+      //         break;
+      //       }
+      // }
+
+      // if (characterList.length == 5) {
+      //
+      //     var smallestChecksumOccurrence = parseInt(characterList[4].occurrences);
+      //     var largestRemainingRoomOccurrence = parseInt(occurrencesRemaining[0].occurrences);
+      //
+      //     console.log("*** isValidRoom :: compare smallestChecksumOccurrence ["+smallestChecksumOccurrence+"] to largestRemainingRoomOccurrence ["+largestRemainingRoomOccurrence+"]");
+      //     if (smallestChecksumOccurrence >= largestRemainingRoomOccurrence) {
+      //       console.log("*** isValidRoom :: all characters found in room ["+roomName+"] for checksum ["+checksum+"] and are the biggest in the room");
+      //       return true;
+      //     } else {
+      //       console.log("*** isValidRoom :: all characters found in room ["+roomName+"] but they are not the biggest 5 in the room ");
+      //       return false;
+      //     };
+      // } else {
+      //   console.log("*** isValidRoom :: ["+character+"] was not found in the room ["+roomName+"] for checksum ["+checksum+"] ");
+      //   return false;
+      // };
     };
 
     function getOccurrences(character, roomName) {
@@ -1089,7 +1149,8 @@ angular.module('adventOfCodeDay', [])
       var sum = 0;
       var room = "";
 
-      for (var i = 0; i < dataArray.length; i++) {
+      // for (var i = 0; i < dataArray.length; i++) {
+      for (var i = 0; i < 7; i++) {
         room = dataArray[i];
         if (isValidRoom(room)) {
               sum += findSectorId(room);
@@ -1102,7 +1163,7 @@ angular.module('adventOfCodeDay', [])
       }
       console.log("sum",sum);
 
-      $scope.part1Output=sum;
+      // $scope.part1Output=sum;
       // console.log("part1", $scope.part1Output);
     };
     //***************************************************************************
@@ -1143,7 +1204,7 @@ angular.module('adventOfCodeDay', [])
 
       }
       // console.log("possibleCounter",possibleCounter);
-      $scope.part2Output=possibleCounter;
+      // $scope.part2Output=possibleCounter;
     };
 
     // console.log("part2", $scope.part2Output);
@@ -1151,6 +1212,6 @@ angular.module('adventOfCodeDay', [])
     part1();
     // part2();
 
-});
-
-})();
+// });
+//
+// })();
