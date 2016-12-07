@@ -5,14 +5,12 @@ var data = "v>v<vvv<<vv^v<v>vv>v<<<^^^^^<<^<vv>^>v^>^>^>^>^><vvvv<^>^<<^><<<^vvv
 function part1() {
   var posx = 0;
   var posy = 0;
-  var coordinate = {};
   var direction = "";
   var visitedHouses = [];
-  var housesWithoutDuplicates = [];
 
   for (var i = 0; i < data.length; i++) {
+    var coordinate = "";
     direction = data.charAt(i);
-    console.log("direction", direction);
 
     if (direction == "v") {
       posx--;
@@ -27,92 +25,81 @@ function part1() {
       break;
     }
 
-    coordinate.x = posx;
-    coordinate.y = posy;
-    console.log("coordinate of house", coordinate);
+    coordinate = posx+":"+posy;
+    // console.log("["+direction+"] coordinate of house", coordinate);
 
     visitedHouses.push(coordinate);
-
-    //count duplicates
-    for (var i = visitedHouses.length - 1; i >= 0; i--) {
-        if (coordinate in visitedHouses) {
-            // remove this item
-            array.splice(i, 1);
-        } else {
-            // add this value to index
-            index[array[i]] = true;
-        }
-    }
-
-    var doubledOutput = [];
-
-for(var i = 0; i < output.length; i++) {
-    var valueIsInArray = false;
-
-    for(var j = 0; j < doubledOutput.length; j++) {
-        if(doubledOutput[j] == output[i]) {
-            valueIsInArray = true;
-        }
-    }
-
-    if(valueIsInArray) {
-        output.splice(i--, 1);
-    } else {
-        doubledOutput.push(output[i]);
-    }
-}
   }
 
-  for (var i=0; i<visitedHouses.length;i++) {
-    visitedHouses = removeDups(visitedHouses);
-  }
+  console.log("visitedHouses",visitedHouses.length);
+  var removeDuplicates = visitedHouses.filter(
+      function(item, i, self){
+          return self.lastIndexOf(item) == i;
+      }
+  );
 
-  console.log("How many houses receive at least one present?",visitedHouses.length);
+  console.log("Part 1 : How many houses receive at least one present?",removeDuplicates.length);
 }
-
 
 //part 2
 //************************
 function part2() {
-  var dimensions = {};
-  var l,w,h = 0;
-  var lw, wh, lh = 0;
-  var ribbon = 0;
-  var ribbonLen = 0;
-  var bow = 0;
-  var total = 0;
+  var santax = 0;
+  var santay = 0;
+  var robox = 0;
+  var roboy = 0;
+  var direction = "";
+  var visitedHouses_Santa = [];
+  var visitedHouses_Robo = [];
 
   for (var i = 0; i < data.length; i++) {
-    dimensions = data[i].split('x');
-    l = dimensions[0]; //console.log("l",l);
-    w = dimensions[1]; //console.log("w",w);
-    h = dimensions[2]; //console.log("h",h);
+    var coordinateSanta = "";
+    var coordinateRobo = "";
+    direction = data.charAt(i);
 
-    // console.log("["+l+"]x["+w+"]x["+h+"] remove largest", Math.max(l,w,h));
-    var largestItem = Math.max(l,w,h);
-    var removeItem = null;
-    for (var j=0; j<dimensions.length;j++){
-      removeItem = dimensions[j];
-      if (dimensions[j] == largestItem) {
-        dimensions.splice(j, 1);
-        // console.log("dimensions",dimensions);
-      }
+    if(i & 1) {
+    // ODD - santa
+        if (direction == "v") {
+          santax--;
+        } else if (direction == "^") {
+          santax++;
+        } else if (direction == "<") {
+          santay--;
+        } else if (direction == ">") {
+          santay++;
+        }
+        coordinateSanta = santax+":"+santay;
+        visitedHouses_Santa.push(coordinateSanta);
+    } else {
+    // EVEN
+        if (direction == "v") {
+          robox--;
+        } else if (direction == "^") {
+          robox++;
+        } else if (direction == "<") {
+          roboy--;
+        } else if (direction == ">") {
+          roboy++;
+        }
+        coordinateRobo = robox+":"+roboy;
+        visitedHouses_Robo.push(coordinateRobo);
     }
-    if (dimensions.length <2) {
-      dimensions.push(removeItem);
-      // console.log("PROBLEM!!!!!");
-    }
-
-    ribbonLen = 2*dimensions[0] + 2*dimensions[1];
-
-    bow = l*w*h;
-    ribbon = ribbonLen + bow;
-    // console.log("totalribbon ["+ribbon+"] = ribbonLen ["+ribbonLen+"] + bow ["+bow+"]");
-    total += ribbon;
-    // console.log("running totoal", total);
   }
-  console.log("How many total feet of ribbon should they order?",total);
+
+  console.log("visitedHouses_Santa",visitedHouses_Santa.length);
+  console.log("visitedHouses_Robo",visitedHouses_Robo.length);
+
+  var mergedVisitedHouses = visitedHouses_Santa.concat(visitedHouses_Robo);
+  console.log("mergedVisitedHouses",mergedVisitedHouses.length);
+
+  var removeDuplicates = mergedVisitedHouses.filter(
+      function(item, i, self){
+          return self.lastIndexOf(item) == i;
+      }
+  );
+
+  console.log("Part 2 : How many houses receive at least one present?",removeDuplicates.length);
 }
 
 part1();
-// part2();
+part2();
