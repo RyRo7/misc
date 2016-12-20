@@ -1,0 +1,12 @@
+table {
+    font: 4px/6px Verdana, Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 1px;
+}
+tr {
+  white-space:nowrap;
+  height: 1px;
+}
+td{
+  white-space: nowrap;
+}

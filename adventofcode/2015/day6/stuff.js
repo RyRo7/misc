@@ -1,4 +1,4 @@
-[
+var data = [
 "turn off 660,55 through 986,197",
 "turn off 341,304 through 638,850",
 "turn off 199,133 through 461,193",
@@ -299,4 +299,75 @@
 "toggle 424,675 through 740,862",
 "toggle 580,592 through 671,900",
 "toggle 296,687 through 906,775"
-]
+];
+
+// // Parse command from string and return object
+// const parseCommand = _command => {
+//   let command = _command.match(/(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)/);
+//   return {command: command[1], x1: +command[2], y1: +command[3], x2: +command[4], y2: +command[5]};
+// };
+//
+// // Map of our lights
+// let LIGHTS = new Uint8Array(1000 * 1000);
+//
+// // Parse each command and toggle lights in our map
+// data.forEach(_command => {
+//   let command = parseCommand(_command);
+//
+//   for (let x = command.x1; x <= command.x2; x++) {
+//     for (let y = command.y1; y <= command.y2; y++) {
+//       let index = 1000 * x + y;
+//
+//       if (command.command === 'turn on') LIGHTS[index] = 1;
+//       if (command.command === 'turn off') LIGHTS[index] = 0;
+//       if (command.command === 'toggle') LIGHTS[index] = LIGHTS[index] === 0 ? 1 : 0;
+//     }
+//   }
+// });
+//
+// // Calculate total of enabled lights
+// const result = LIGHTS.reduce((total, light) => light === 0 ? total : ++total, 0);
+
+//console.log("how many lights are lit?", result);
+
+//------------------------------------------------------------------------------------
+
+//part 2
+
+// Parse command from string and return object
+const COMMANDS_REGEX = /(turn on|turn off|toggle) (\d+),(\d+) through (\d+),(\d+)/;
+const parseCommand2 = _command => {
+  let command = _command.match(COMMANDS_REGEX);
+  return {command: command[1], x1: +command[2], y1: +command[3], x2: +command[4], y2: +command[5]};
+};
+
+// Map of our lights
+let LIGHTS = new Uint8Array(1000 * 1000);
+
+// Parse each command and change brightness of our lights
+data.forEach(_command => {
+  let command = parseCommand2(_command);
+
+  for (let x = command.x1; x <= command.x2; x++) {
+    for (let y = command.y1; y <= command.y2; y++) {
+      let index = 1000 * x + y;
+
+      switch (command.command) {
+        case 'turn on':
+          LIGHTS[index] += 1;
+          break;
+        case 'turn off':
+          LIGHTS[index] = LIGHTS[index] === 0 ? 0 : LIGHTS[index] - 1;
+          break;
+        case 'toggle':
+          LIGHTS[index] += 2;
+          break;
+      }
+    }
+  }
+});
+
+// Calculate brightness
+const result2 = LIGHTS.reduce((brightness, light) => brightness + light, 0);
+
+console.log("What is the total brightness of all lights combined after following Santa's instructions?", result2);
